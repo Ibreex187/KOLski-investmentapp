@@ -6,7 +6,14 @@ import SectionPanel from '../components/dashboard/SectionPanel';
 import StatusList from '../components/dashboard/StatusList';
 import PremiumPage from '../components/layout/PremiumPage';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4080/api/v1';
+const LOCAL_API_BASE_URL = 'http://localhost:4080/api/v1';
+const DEPLOYED_API_BASE_URL = 'https://ko-lski-investment-backend.vercel.app/api/v1';
+const isLocalHost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || (isLocalHost ? LOCAL_API_BASE_URL : DEPLOYED_API_BASE_URL);
 
 export default function ApiDocs() {
   const endpointItems = useMemo(

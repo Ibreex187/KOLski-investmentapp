@@ -12,7 +12,14 @@ const COOKIE_OPTIONS = {
   sameSite: isSecureCookieContext ? 'Strict' : 'Lax',
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4080/api/v1';
+const LOCAL_API_BASE_URL = 'http://localhost:4080/api/v1';
+const DEPLOYED_API_BASE_URL = 'https://ko-lski-investment-backend.vercel.app/api/v1';
+const isLocalHost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || (isLocalHost ? LOCAL_API_BASE_URL : DEPLOYED_API_BASE_URL);
 const API_TIMEOUT_MS = 15000;
 const API_ENDPOINTS = {
   auth: {
