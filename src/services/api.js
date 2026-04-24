@@ -78,11 +78,19 @@ const API_ENDPOINTS = {
   },
 };
 
+const toSafeString = (value) => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (value.message && typeof value.message === 'string') return value.message;
+  return 'Something went wrong. Please try again.';
+};
+
 const getApiErrorMessage = (error) => {
-  if (error.response?.data?.message) return error.response.data.message;
-  if (error.response?.data?.error) return error.response.data.error;
+  if (error.response?.data?.message) return toSafeString(error.response.data.message);
+  if (error.response?.data?.error) return toSafeString(error.response.data.error);
   if (error.code === 'ECONNABORTED') return 'Request timed out. Please try again.';
-  if (error.message) return error.message;
+  if (error.message) return toSafeString(error.message);
   return 'Something went wrong. Please try again.';
 };
 

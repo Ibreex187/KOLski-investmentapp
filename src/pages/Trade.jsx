@@ -81,7 +81,10 @@ export default function Trade({ isLoading = false }) {
 
   useEffect(() => {
     if (lastAction?.success) {
-      toast.success(lastAction?.message || 'Portfolio action completed successfully.');
+      const msg = typeof lastAction?.message === 'string'
+        ? lastAction.message
+        : 'Portfolio action completed successfully.';
+      toast.success(msg);
       dispatch(clearPortfolioAction());
     }
   }, [lastAction, dispatch]);
