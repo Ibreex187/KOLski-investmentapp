@@ -37,7 +37,8 @@ export default function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { loading, error, token, user } = useSelector((state) => state.auth);
+  const [submitting, setSubmitting] = useState(false);
+  const { error, token, user } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -66,15 +67,19 @@ export default function Register() {
 
   const onSubmit = async ({ name, username, email, password }) => {
     dispatch(clearError());
-
-    await dispatch(
-      registerUser({
-        name: name.trim(),
-        username: username.trim().toLowerCase(),
-        email: email.trim().toLowerCase(),
-        password,
-      })
-    );
+    setSubmitting(true);
+    try {
+      await dispatch(
+        registerUser({
+          name: name.trim(),
+          username: username.trim().toLowerCase(),
+          email: email.trim().toLowerCase(),
+          password,
+        })
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -197,9 +202,9 @@ export default function Register() {
         <button
           type="submit"
           className="btn btn-primary w-100 py-2 premium-auth-btn"
-          disabled={loading}
+          disabled={submitting}
         >
-          {loading ? <InlineLoader label="Creating account..." /> : 'Create Account'}
+          {submitting ? <InlineLoader label="Creating account..." /> : 'Create Account'}
         </button>
 
         <p className="auth-submit-note">Create your account now and start with a cleaner investing workflow.</p>

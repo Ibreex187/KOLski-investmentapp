@@ -54,6 +54,11 @@ export default function Trade({ isLoading = false }) {
   const [depositForm, setDepositForm] = useState(initialFundingForm);
   const [withdrawForm, setWithdrawForm] = useState(initialFundingForm);
 
+  const [buySubmitting, setBuySubmitting] = useState(false);
+  const [sellSubmitting, setSellSubmitting] = useState(false);
+  const [depositSubmitting, setDepositSubmitting] = useState(false);
+  const [withdrawSubmitting, setWithdrawSubmitting] = useState(false);
+
   useEffect(() => {
     if (!overview && !overviewLoading) {
       dispatch(fetchPortfolioOverview());
@@ -211,6 +216,7 @@ export default function Trade({ isLoading = false }) {
       return;
     }
 
+    setBuySubmitting(true);
     try {
       await dispatch(
         buyStock({
@@ -225,6 +231,8 @@ export default function Trade({ isLoading = false }) {
       setBuyForm(initialBuyForm);
     } catch {
       // handled via shared portfolio error state
+    } finally {
+      setBuySubmitting(false);
     }
   };
 
@@ -244,6 +252,7 @@ export default function Trade({ isLoading = false }) {
       return;
     }
 
+    setSellSubmitting(true);
     try {
       await dispatch(
         sellStock({
@@ -256,6 +265,8 @@ export default function Trade({ isLoading = false }) {
       setSellForm(initialSellForm);
     } catch {
       // handled via shared portfolio error state
+    } finally {
+      setSellSubmitting(false);
     }
   };
 
@@ -274,6 +285,7 @@ export default function Trade({ isLoading = false }) {
       return;
     }
 
+    setDepositSubmitting(true);
     try {
       await dispatch(
         depositFunds({
@@ -285,6 +297,8 @@ export default function Trade({ isLoading = false }) {
       setDepositForm(initialFundingForm);
     } catch {
       // handled via shared portfolio error state
+    } finally {
+      setDepositSubmitting(false);
     }
   };
 
@@ -308,6 +322,7 @@ export default function Trade({ isLoading = false }) {
       return;
     }
 
+    setWithdrawSubmitting(true);
     try {
       await dispatch(
         withdrawFunds({
@@ -319,6 +334,8 @@ export default function Trade({ isLoading = false }) {
       setWithdrawForm(initialFundingForm);
     } catch {
       // handled via shared portfolio error state
+    } finally {
+      setWithdrawSubmitting(false);
     }
   };
 
@@ -429,8 +446,8 @@ export default function Trade({ isLoading = false }) {
                 </label>
               </div>
 
-              <button type="submit" className="panel-button" disabled={actionLoading}>
-                {actionLoading ? 'Submitting...' : 'Place buy order'}
+              <button type="submit" className="panel-button" disabled={buySubmitting}>
+                {buySubmitting ? 'Submitting...' : 'Place buy order'}
               </button>
             </form>
 
@@ -506,8 +523,8 @@ export default function Trade({ isLoading = false }) {
                   : 'Choose one of your current holdings to prepare a sell order.'}
               </p>
 
-              <button type="submit" className="panel-button panel-button--secondary" disabled={actionLoading}>
-                {actionLoading ? 'Submitting...' : 'Place sell order'}
+              <button type="submit" className="panel-button panel-button--secondary" disabled={sellSubmitting}>
+                {sellSubmitting ? 'Submitting...' : 'Place sell order'}
               </button>
             </form>
 
@@ -565,8 +582,8 @@ export default function Trade({ isLoading = false }) {
 
               <p className="trade-submit-note">Deposits are queued as pending until approved by an admin.</p>
 
-              <button type="submit" className="panel-button" disabled={actionLoading}>
-                {actionLoading ? 'Submitting...' : 'Submit manual deposit'}
+              <button type="submit" className="panel-button" disabled={depositSubmitting}>
+                {depositSubmitting ? 'Submitting...' : 'Submit manual deposit'}
               </button>
             </form>
 
@@ -626,8 +643,8 @@ export default function Trade({ isLoading = false }) {
                 Available cash: {formatCurrency(portfolio.cash_balance, portfolio.currency || 'USD')}
               </p>
 
-              <button type="submit" className="panel-button panel-button--secondary" disabled={actionLoading}>
-                {actionLoading ? 'Submitting...' : 'Submit manual withdrawal'}
+              <button type="submit" className="panel-button panel-button--secondary" disabled={withdrawSubmitting}>
+                {withdrawSubmitting ? 'Submitting...' : 'Submit manual withdrawal'}
               </button>
             </form>
           </div>

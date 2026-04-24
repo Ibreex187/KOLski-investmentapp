@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -28,7 +28,8 @@ const forgotHighlights = [
 export default function ForgotPassword() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const [submitting, setSubmitting] = useState(false);
+  const { error, token } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -53,7 +54,7 @@ export default function ForgotPassword() {
   const onSubmit = async ({ email }) => {
     dispatch(clearError());
     const normalizedEmail = email.trim().toLowerCase();
-
+    setSubmitting(true);
     try {
       const payload = await dispatch(
         requestPasswordResetOtp({ email: normalizedEmail })
@@ -63,6 +64,8 @@ export default function ForgotPassword() {
       navigate('/reset-password', { state: { email: normalizedEmail } });
     } catch {
       // handled via slice error state and toast
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -97,9 +100,9 @@ export default function ForgotPassword() {
         <button
           type="submit"
           className="btn btn-primary w-100 py-2 premium-auth-btn"
-          disabled={loading}
+          disabled={submitting}
         >
-          {loading ? <InlineLoader label="Sending code..." /> : 'Send reset code'}
+          {submitting ? <InlineLoader label="Sending code..." /> : 'Send reset code'}
         </button>
 
         <p className="auth-submit-note">

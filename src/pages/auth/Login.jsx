@@ -30,7 +30,8 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const [submitting, setSubmitting] = useState(false);
+  const { error, token } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -54,13 +55,17 @@ export default function Login() {
 
   const onSubmit = async (formData) => {
     dispatch(clearError());
-
-    await dispatch(
-      loginUser({
-        ...formData,
-        email: formData.email.trim().toLowerCase(),
-      })
-    );
+    setSubmitting(true);
+    try {
+      await dispatch(
+        loginUser({
+          ...formData,
+          email: formData.email.trim().toLowerCase(),
+        })
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -126,9 +131,9 @@ export default function Login() {
         <button
           type="submit"
           className="btn btn-primary w-100 py-2 premium-auth-btn"
-          disabled={loading}
+          disabled={submitting}
         >
-          {loading ? <InlineLoader label="Signing in..." /> : 'Sign In'}
+          {submitting ? <InlineLoader label="Signing in..." /> : 'Sign In'}
         </button>
 
         <p className="auth-submit-note">Secure sign-in with quick access to your personal workspace.</p>

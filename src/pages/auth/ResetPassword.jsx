@@ -37,11 +37,12 @@ export default function ResetPassword() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading, error, token, passwordReset } = useSelector((state) => state.auth);
+  const { error, token, passwordReset } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isCodeVerified, setIsCodeVerified] = useState(Boolean(passwordReset?.resetToken));
+  const [submitting, setSubmitting] = useState(false);
 
   const initialEmail = location.state?.email || passwordReset?.email || '';
 
@@ -81,6 +82,7 @@ export default function ResetPassword() {
   const onSubmit = async (formData) => {
     dispatch(clearError());
     const normalizedEmail = formData.email.trim().toLowerCase();
+    setSubmitting(true);
 
     if (!isCodeVerified) {
       try {
@@ -95,6 +97,8 @@ export default function ResetPassword() {
         toast.success(payload?.message || 'Code verified. You can now set a new password.');
       } catch {
         // handled by slice error state and toast
+      } finally {
+        setSubmitting(false);
       }
       return;
     }
@@ -129,6 +133,8 @@ export default function ResetPassword() {
       navigate('/login', { replace: true });
     } catch {
       // handled by slice error state and toast
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -236,9 +242,9 @@ export default function ResetPassword() {
         <button
           type="submit"
           className="btn btn-primary w-100 py-2 premium-auth-btn"
-          disabled={loading}
+          disabled={submitting}
         >
-          {loading ? (
+          {submitting ? (
             <InlineLoader label={isCodeVerified ? 'Saving password...' : 'Verifying code...'} />
           ) : isCodeVerified ? (
             'Reset password'
