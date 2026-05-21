@@ -302,6 +302,8 @@ const authSlice = createSlice({
     token: Cookies.get(COOKIE_NAME) || null,
     refreshToken: getStoredRefreshToken(),
     loading: false,
+    sendVerificationLoading: false,
+    verifyEmailLoading: false,
     sessionsLoading: false,
     sessionActionLoading: false,
     sessions: [],
@@ -343,28 +345,28 @@ const authSlice = createSlice({
         state.refreshToken = getStoredRefreshToken();
       })
       .addCase(sendVerificationEmailRequest.pending, (state) => {
-        state.loading = true;
+        state.sendVerificationLoading = true;
         state.error = null;
       })
       .addCase(sendVerificationEmailRequest.fulfilled, (state) => {
-        state.loading = false;
+        state.sendVerificationLoading = false;
       })
       .addCase(sendVerificationEmailRequest.rejected, (state, action) => {
-        state.loading = false;
+        state.sendVerificationLoading = false;
         state.error = action.payload;
       })
       .addCase(verifyEmailToken.pending, (state) => {
-        state.loading = true;
+        state.verifyEmailLoading = true;
         state.error = null;
       })
       .addCase(verifyEmailToken.fulfilled, (state, action) => {
-        state.loading = false;
+        state.verifyEmailLoading = false;
         state.user = action.payload.user ?? state.user;
         state.token = action.payload.token ?? state.token;
         state.refreshToken = action.payload.refreshToken ?? state.refreshToken;
       })
       .addCase(verifyEmailToken.rejected, (state, action) => {
-        state.loading = false;
+        state.verifyEmailLoading = false;
         state.error = action.payload;
       })
       .addCase(fetchActiveSessions.pending, (state) => {

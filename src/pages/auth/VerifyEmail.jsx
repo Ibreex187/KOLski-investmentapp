@@ -30,7 +30,7 @@ export default function VerifyEmail() {
   const verificationToken = searchParams.get('token')?.trim() || '';
   const hasAutoTriggered = useRef(false);
 
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const { sendVerificationLoading, verifyEmailLoading, error, user } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -156,9 +156,9 @@ export default function VerifyEmail() {
           type="button"
           className="panel-button panel-button--secondary"
           onClick={handleSendVerification}
-          disabled={loading}
+          disabled={sendVerificationLoading || verifyEmailLoading}
         >
-          {loading ? <InlineLoader label="Sending..." /> : 'Send verification email'}
+          {sendVerificationLoading ? <InlineLoader label="Sending..." /> : 'Send verification email'}
         </button>
 
         <div className="mb-3 mt-3">
@@ -179,9 +179,9 @@ export default function VerifyEmail() {
         <button
           type="submit"
           className="btn btn-primary w-100 py-2 premium-auth-btn"
-          disabled={loading}
+          disabled={verifyEmailLoading || sendVerificationLoading}
         >
-          {loading ? <InlineLoader label="Verifying..." /> : 'Verify email now'}
+          {verifyEmailLoading ? <InlineLoader label="Verifying..." /> : 'Verify email now'}
         </button>
 
         <p className="auth-submit-note">
