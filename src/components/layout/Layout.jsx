@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
+import { Info } from 'lucide-react';
 import Navbar from './Navbar';
 import { adminNavItems, dashboardNavItems, privateNavbarConfig } from './navbarConfig';
 
@@ -26,6 +27,15 @@ export default function Layout() {
 
       <main className="app-content container-fluid">
         <div className="content-panel">
+          {user?.isDemo && (
+            <div className="demo-mode-banner" role="status">
+              <Info size={16} />
+              <span>
+                <strong>Demo mode.</strong> You&apos;re viewing a shared sample account. Trades are
+                real but the data resets daily and is visible to other visitors.
+              </span>
+            </div>
+          )}
           <Outlet />
         </div>
       </main>

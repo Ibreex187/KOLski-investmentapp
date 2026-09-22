@@ -35,6 +35,7 @@ const API_ENDPOINTS = {
     logout: '/logout',
     logoutAll: '/logout-all',
     sessions: '/sessions',
+    demoLogin: '/demo/login',
   },
   market: {
     quote: '/market/quote',

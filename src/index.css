@@ -2310,6 +2310,40 @@ body {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.landing-btn--ghost {
+  color: #94a3b8;
+  background: transparent;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.landing-btn--ghost:hover {
+  color: #e2e8f0;
+}
+
+.landing-hero__demo-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.demo-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #7dd3fc;
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.demo-mode-banner strong {
+  color: #bae6fd;
+}
+
 .landing-points {
   display: grid;
   gap: 0.55rem;

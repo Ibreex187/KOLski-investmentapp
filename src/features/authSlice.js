@@ -289,6 +289,30 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// No credentials needed: logs the caller into the single shared, seeded demo account
+// (see server/services/demo.service.js). Reuses the normal session/token flow, so it
+// behaves exactly like loginUser afterwards (refresh, logout, protected routes, ...).
+export const loginAsDemo = createAsyncThunk(
+  'auth/loginAsDemo',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post(
+        API_ENDPOINTS.auth.demoLogin,
+        {},
+        { skipAuthRedirect: true }
+      );
+      const session = normalizeSessionPayload(data);
+      persistAuthSession(session);
+      return {
+        ...data,
+        ...session,
+      };
+    } catch (err) {
+      return rejectWithValue(getApiErrorMessage(err) || 'Could not start the demo');
+    }
+  }
+);
+
 const initialPasswordResetState = {
   email: '',
   resetToken: null,
@@ -494,6 +518,20 @@ const authSlice = createSlice({
         state.refreshToken = action.payload.refreshToken ?? state.refreshToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(loginAsDemo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginAsDemo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken ?? state.refreshToken;
+      })
+      .addCase(loginAsDemo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

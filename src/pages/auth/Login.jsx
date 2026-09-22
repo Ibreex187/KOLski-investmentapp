@@ -4,9 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, PlayCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { loginUser, clearError } from '../../features/authSlice';
+import { loginUser, loginAsDemo, clearError } from '../../features/authSlice';
 import AuthShell from '../../components/common/AuthShell';
 import InlineLoader from '../../components/common/InlineLoader';
 
@@ -31,6 +31,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [startingDemo, setStartingDemo] = useState(false);
   const { error, token } = useSelector((state) => state.auth);
 
   const {
@@ -65,6 +66,18 @@ export default function Login() {
       );
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleTryDemo = async () => {
+    setStartingDemo(true);
+    try {
+      await dispatch(loginAsDemo()).unwrap();
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      toast.error(typeof err === 'string' ? err : 'Could not start the demo. Please try again.');
+    } finally {
+      setStartingDemo(false);
     }
   };
 
@@ -134,6 +147,22 @@ export default function Login() {
           disabled={submitting}
         >
           {submitting ? <InlineLoader label="Signing in..." /> : 'Sign In'}
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-outline-secondary w-100 py-2 premium-auth-btn"
+          onClick={handleTryDemo}
+          disabled={startingDemo || submitting}
+        >
+          {startingDemo ? (
+            <InlineLoader label="Starting demo..." />
+          ) : (
+            <>
+              <PlayCircle size={16} className="me-2" />
+              Try the live demo instead
+            </>
+          )}
         </button>
 
         <p className="auth-submit-note">Secure sign-in with quick access to your personal workspace.</p>
