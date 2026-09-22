@@ -188,7 +188,6 @@ export const buyStock = createAsyncThunk(
         ...payload,
         symbol: String(payload.symbol || '').trim().toUpperCase(),
         shares: Number(payload.shares),
-        price: Number(payload.price),
         reference_id: payload.reference_id || buildReferenceId('buy'),
       };
 
@@ -209,7 +208,6 @@ export const sellStock = createAsyncThunk(
         ...payload,
         symbol: String(payload.symbol || '').trim().toUpperCase(),
         shares: Number(payload.shares),
-        price: Number(payload.price),
         reference_id: payload.reference_id || buildReferenceId('sell'),
       };
 

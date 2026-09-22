@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 
 export default function PreviewSection({ previewTabs = [] }) {
   const [activePreview, setActivePreview] = useState(0);
-  const [animatedValue, setAnimatedValue] = useState(previewTabs[0]?.counter?.value || 0);
+  // Tracks which tab the value belongs to, so switching tabs shows 0 until the new count-up
+  // starts, without resetting state synchronously inside the effect.
+  const [animation, setAnimation] = useState({ tab: 0, value: 0 });
+  const animatedValue = animation.tab === activePreview ? animation.value : 0;
 
   useEffect(() => {
     if (!previewTabs.length) return undefined;
@@ -21,12 +24,10 @@ export default function PreviewSection({ previewTabs = [] }) {
     let frame = 0;
     const totalFrames = 24;
 
-    setAnimatedValue(0);
-
     const timer = window.setInterval(() => {
       frame += 1;
       const progress = Math.min(frame / totalFrames, 1);
-      setAnimatedValue(Math.round(target * progress));
+      setAnimation({ tab: activePreview, value: Math.round(target * progress) });
 
       if (progress === 1) {
         window.clearInterval(timer);

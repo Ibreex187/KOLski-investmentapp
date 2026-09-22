@@ -23,7 +23,7 @@ export default function StockDetails() {
   );
 
   const quote = quotesBySymbol[normalizedSymbol];
-  const history = historyBySymbol[normalizedSymbol] || [];
+  const history = useMemo(() => historyBySymbol[normalizedSymbol] || [], [historyBySymbol, normalizedSymbol]);
 
   useEffect(() => {
     dispatch(fetchMarketQuote(normalizedSymbol));

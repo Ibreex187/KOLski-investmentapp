@@ -37,7 +37,7 @@ export default function HistoricalChart() {
   const { quotesBySymbol, historyBySymbol, historyLoading, error } = useSelector((state) => state.market);
 
   const quote = quotesBySymbol[normalizedSymbol];
-  const history = historyBySymbol[normalizedSymbol] || [];
+  const history = useMemo(() => historyBySymbol[normalizedSymbol] || [], [historyBySymbol, normalizedSymbol]);
 
   useEffect(() => {
     dispatch(fetchMarketQuote(normalizedSymbol));

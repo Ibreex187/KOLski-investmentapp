@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { Landmark, RefreshCcw } from 'lucide-react';
@@ -47,7 +47,7 @@ export default function ManualDeposits({ isLoading = false }) {
   const selectedDepositId = searchParams.get('depositId') || '';
   const currentPage = Math.max(1, Number(searchParams.get('page') || 1) || 1);
 
-  const updateQueryString = (updates, options = {}) => {
+  const updateQueryString = useCallback((updates, options = {}) => {
     const nextParams = new URLSearchParams(searchParams);
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -66,7 +66,7 @@ export default function ManualDeposits({ isLoading = false }) {
     });
 
     setSearchParams(nextParams, options);
-  };
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const query = {
@@ -93,7 +93,7 @@ export default function ManualDeposits({ isLoading = false }) {
     if (!selectedDepositId && manualDeposits.length) {
       updateQueryString({ depositId: manualDeposits[0].deposit_id }, { replace: true });
     }
-  }, [manualDeposits, selectedDepositId]);
+  }, [manualDeposits, selectedDepositId, updateQueryString]);
 
   useEffect(() => {
     if (selectedDepositId) {

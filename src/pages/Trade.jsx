@@ -27,14 +27,12 @@ const initialBuyForm = {
   symbol: '',
   name: '',
   shares: '',
-  price: '',
   sector: '',
 };
 
 const initialSellForm = {
   symbol: '',
   shares: '',
-  price: '',
 };
 
 const initialFundingForm = {
@@ -45,7 +43,7 @@ const initialFundingForm = {
 
 export default function Trade({ isLoading = false }) {
   const dispatch = useDispatch();
-  const { overview, overviewLoading, actionLoading, lastAction, error, manualDeposits, manualDepositsLoading, manualWithdrawals, manualWithdrawalsLoading } = useSelector(
+  const { overview, overviewLoading, lastAction, error, manualDeposits, manualDepositsLoading, manualWithdrawals, manualWithdrawalsLoading } = useSelector(
     (state) => state.portfolio
   );
 
@@ -95,7 +93,7 @@ export default function Trade({ isLoading = false }) {
   }, [lastAction, dispatch]);
 
   const portfolio = overview?.portfolio || {};
-  const holdings = Array.isArray(overview?.holdings) ? overview.holdings : [];
+  const holdings = useMemo(() => (Array.isArray(overview?.holdings) ? overview.holdings : []), [overview]);
   const selectedHolding = holdings.find((item) => item.symbol === sellForm.symbol);
 
   const holdingItems = useMemo(() => {
@@ -209,10 +207,9 @@ export default function Trade({ isLoading = false }) {
     event.preventDefault();
 
     const shares = Number(buyForm.shares);
-    const price = Number(buyForm.price);
 
-    if (!buyForm.symbol.trim() || shares <= 0 || price <= 0) {
-      toast.error('Enter a valid symbol, share count, and price.');
+    if (!buyForm.symbol.trim() || !(shares > 0)) {
+      toast.error('Enter a valid symbol and share count.');
       return;
     }
 
@@ -223,7 +220,6 @@ export default function Trade({ isLoading = false }) {
           symbol: buyForm.symbol,
           name: buyForm.name || buyForm.symbol.toUpperCase(),
           shares,
-          price,
           sector: buyForm.sector,
         })
       ).unwrap();
@@ -240,10 +236,9 @@ export default function Trade({ isLoading = false }) {
     event.preventDefault();
 
     const shares = Number(sellForm.shares);
-    const price = Number(sellForm.price);
 
-    if (!sellForm.symbol.trim() || shares <= 0 || price <= 0) {
-      toast.error('Enter a valid holding, share count, and price.');
+    if (!sellForm.symbol.trim() || !(shares > 0)) {
+      toast.error('Enter a valid holding and share count.');
       return;
     }
 
@@ -258,7 +253,6 @@ export default function Trade({ isLoading = false }) {
         sellStock({
           symbol: sellForm.symbol,
           shares,
-          price,
         })
       ).unwrap();
 
@@ -419,20 +413,9 @@ export default function Trade({ isLoading = false }) {
                     placeholder="10"
                   />
                 </label>
-                <label>
-                  <span>Price</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="form-control"
-                    value={buyForm.price}
-                    onChange={(event) =>
-                      setBuyForm((current) => ({ ...current, price: event.target.value }))
-                    }
-                    placeholder="185"
-                  />
-                </label>
+                <p className="trade-submit-note trade-field-grid__full">
+                  Orders fill at the current market price. The executed price is shown in your confirmation.
+                </p>
                 <label className="trade-field-grid__full">
                   <span>Sector (optional)</span>
                   <input
@@ -471,12 +454,7 @@ export default function Trade({ isLoading = false }) {
                     value={sellForm.symbol}
                     onChange={(event) => {
                       const symbol = event.target.value;
-                      const match = holdings.find((item) => item.symbol === symbol);
-                      setSellForm((current) => ({
-                        ...current,
-                        symbol,
-                        price: match?.average_price ? String(match.average_price) : current.price,
-                      }));
+                      setSellForm((current) => ({ ...current, symbol }));
                     }}
                   >
                     <option value="">Select a holding</option>
@@ -501,26 +479,12 @@ export default function Trade({ isLoading = false }) {
                     placeholder="5"
                   />
                 </label>
-                <label>
-                  <span>Price</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="form-control"
-                    value={sellForm.price}
-                    onChange={(event) =>
-                      setSellForm((current) => ({ ...current, price: event.target.value }))
-                    }
-                    placeholder="200"
-                  />
-                </label>
               </div>
 
               <p className="trade-submit-note">
                 {selectedHolding
                   ? `Available to sell: ${selectedHolding.shares} shares of ${selectedHolding.symbol}`
-                  : 'Choose one of your current holdings to prepare a sell order.'}
+                  : 'Choose one of your current holdings to prepare a sell order. Sells fill at the current market price.'}
               </p>
 
               <button type="submit" className="panel-button panel-button--secondary" disabled={sellSubmitting}>
