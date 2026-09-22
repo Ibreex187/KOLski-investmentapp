@@ -53,7 +53,7 @@ export default function HeroSection({ reasonsToJoin = [] }) {
       </div>
 
       <p className="landing-hero__demo-note">
-        No sign-up required. Explores a shared sample portfolio with real trade history; data resets daily.
+        No sign-up required. Explore a shared sample portfolio with real trade history; data resets daily.
       </p>
 
       <ul className="landing-points">
